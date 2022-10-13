@@ -1,2 +1,6 @@
 Flask
 Gunicorn
+pip==20.1
+boto3==1.13.17
+Pillow==7.1.2
+pymongo==3.10.1
