@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-
 #########################################################
 # This is the database processing file. (aka. Models)
 # It contains the DB connections, queries and functions.
 # Uses principles of Models, Views, Controllers (MVC).
 #########################################################
-
 # Import modules required for app
 import os
 import boto3
@@ -13,20 +11,21 @@ import json
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from PIL import Image
-from config import ecs_test_drive
+from config import ecs_test_drive, piper_mongodb
 
-# Check if running in Pivotal Web Services with MongoDB service bound
-#if 'VCAP_SERVICES' in os.environ:
-#    VCAP_SERVICES = json.loads(os.environ['VCAP_SERVICES'])
-#    MONGOCRED = VCAP_SERVICES["mlab"][0]["credentials"]
-#    client = MongoClient(MONGOCRED["uri"])
-#    DB_NAME = str(MONGOCRED["uri"].split("/")[-1])
-
-# Otherwise, assume running locally with local MongoDB instance
-#else:
+### Local or Remote MongoDB instance
 # client = MongoClient("mongodb://USERNAME:PASSWORD@cluster0-shard-00-00.mzmpq.mongodb.net:27017,cluster0-shard-00-01.mzmpq.mongodb.net:27017,cluster0-shard-00-02.mzmpq.mongodb.net:27017/?ssl=true&replicaSet=atlas-4qm2w8-shard-0&authSource=admin&retryWrites=true&w=majority")
-client = MongoClient("mongodb://piperdb1:VtV54NdmasshdJvg@cluster0-shard-00-00.jnkoj.mongodb.net:27017,cluster0-shard-00-01.jnkoj.mongodb.net:27017,cluster0-shard-00-02.jnkoj.mongodb.net:27017/?ssl=true&replicaSet=atlas-10dctt-shard-0&authSource=admin&retryWrites=true&w=majority")
-DB_NAME = "testdb1011nm"  ##### Make sure this create your unique MongoDB database name######
+######## Delete next line for PIPER
+# client = MongoClient("mongodb://piperdb1:VtV54NdmasshdJvg@cluster0-shard-00-00.jnkoj.mongodb.net:27017,cluster0-shard-00-01.jnkoj.mongodb.net:27017,cluster0-shard-00-02.jnkoj.mongodb.net:27017/?ssl=true&replicaSet=atlas-10dctt-shard-0&authSource=admin&retryWrites=true&w=majority")
+
+DB_USER = piper_mongodb['mongodb_user']  
+DB_PASSWORD = piper_mongodb['mongodb_password']  
+db_arg = "mongodb://" + DB_USER + ":" + DB_PASSWORD + "@cluster0-shard-00-00.jnkoj.mongodb.net:27017,cluster0-shard-00-01.jnkoj.mongodb.net:27017,cluster0-shard-00-02.jnkoj.mongodb.net:27017/?ssl=true&replicaSet=atlas-10dctt-shard-0&authSource=admin&retryWrites=true&w=majority"
+client = MongoClient(db_arg)
+
+# Make sure this create your unique MongoDB database name######
+# DB_NAME = "testdb01"  ##### Make sure this create your unique MongoDB database name######
+DB_NAME = piper_mongodb['mongodb_name']  
 
 # Get database connection with database name
 db = client[DB_NAME]
